@@ -2,8 +2,6 @@ package br.com.centroweg;
 
 import java.util.Scanner;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
     static Scanner scanner = new Scanner(System.in);
@@ -75,7 +73,10 @@ public class Main {
     }
 
     private static double calcularImposto(double valor, String tipo) {
-        return 0;
+        if (tipo.equals("SERVICO")) return valor * 0.05;
+        if (tipo.equals("PRODUTO")) return valor * 0.17;
+        if (tipo.equals("EXPORTACAO")) return 0.0;
+        return 0.0;
     }
 
 }
