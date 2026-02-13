@@ -65,7 +65,14 @@ public class Main {
             double imposto = calcularImposto(valorBase, tipoEnum);
             double total = valorBase + imposto;
 
-            System.out.println("Calculado: Imposto R$ " + imposto + " | Total R$ " + total);
+            System.out.println("===============================");
+            System.out.println("CALCULADO COM SUCESSO:");
+            System.out.println("Imposto: R$ " + imposto);
+            System.out.println("Total:   R$ " + total);
+            System.out.println("===============================");
+
+            System.out.println("=== Iniciando persistência automática no Banco de Dados ===");
+            salvarNoBancoDeDados(descricao, valorBase, imposto, total, tipoEnum);
 
         } catch (NumberFormatException e) {
             System.out.println("ERRO: Digite um número válido.");
@@ -78,5 +85,7 @@ public class Main {
         if (tipo.equals("EXPORTACAO")) return 0.0;
         return 0.0;
     }
+
+
 
 }
