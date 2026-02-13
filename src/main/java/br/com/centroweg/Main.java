@@ -32,7 +32,16 @@ public class Main {
     }
 
     private static void processarEmissao() {
+        System.out.println("\n === NOVA EMISSÃO ===");
+
+        System.out.println("Descrição: ");
+        String decisao = scanner.nextLine();
+
+        if (decisao.trim().isEmpty()){
+            System.out.println("[ERRO]: Descrição vazia");
+            return;
     }
+
     }
 
 }
