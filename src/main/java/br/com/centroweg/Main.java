@@ -13,6 +13,26 @@ public class Main {
     private static String PASSWORD = "mysqlPW";
     public static void main(String[] args) {
 
+        System.out.println("=== ERP FISCAL LEGADO ===");
 
+        while (true){
+            System.out.println("\n --- MENU PRINCIPAL ---");
+            System.out.println("[1] Emitir Nota Fiscal");
+            System.out.println("[2] Sair");
+            System.out.println("Opcão: ");
+            String opcao = scanner.nextLine();
+
+            if (opcao.equals("1")){
+                processarEmissao();
+            }else if (opcao.equals("2")){
+                System.out.println("Saindo do Sistema");
+                break;
+            }
+        }
     }
+
+    private static void processarEmissao() {
+    }
+    }
+
 }
