@@ -32,16 +32,50 @@ public class Main {
     }
 
     private static void processarEmissao() {
-        System.out.println("\n === NOVA EMISSÃO ===");
+        System.out.println("\n>>> NOVA EMISSÃO <<<");
 
-        System.out.println("Descrição: ");
-        String decisao = scanner.nextLine();
+        System.out.print("Descrição: ");
+        String descricao = scanner.nextLine();
 
-        if (decisao.trim().isEmpty()){
-            System.out.println("[ERRO]: Descrição vazia");
+        if (descricao.trim().isEmpty()) {
+            System.out.println("ERRO: Descrição vazia.");
             return;
+        }
+
+        System.out.print("Valor Base (R$): ");
+        try {
+            double valorBase = Double.parseDouble(scanner.nextLine());
+
+            if (valorBase <= 0) {
+                System.out.println("ERRO: Valor deve ser positivo.");
+                return;
+            }
+
+            System.out.println("Tipo: [1] Serviço | [2] Produto | [3] Exportação");
+            System.out.print("Escolha: ");
+            String opcao = scanner.nextLine();
+
+            String tipoEnum = "";
+            if (opcao.equals("1")) tipoEnum = "SERVICO";
+            else if (opcao.equals("2")) tipoEnum = "PRODUTO";
+            else if (opcao.equals("3")) tipoEnum = "EXPORTACAO";
+            else {
+                System.out.println("Opção inválida!");
+                return;
+            }
+
+            double imposto = calcularImposto(valorBase, tipoEnum);
+            double total = valorBase + imposto;
+
+            System.out.println("Calculado: Imposto R$ " + imposto + " | Total R$ " + total);
+
+        } catch (NumberFormatException e) {
+            System.out.println("ERRO: Digite um número válido.");
+        }
     }
 
+    private static double calcularImposto(double valor, String tipo) {
+        return 0;
     }
 
 }
