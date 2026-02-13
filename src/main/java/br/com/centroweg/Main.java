@@ -13,75 +13,104 @@ public class Main {
     private static String URL = "jdbc:mysql://localhost:3306/fiscalflow?useSSL=false&serverTimezone=UTC";
     private static String USER = "root";
     private static String PASSWORD = "mysqlPW";
+
     public static void main(String[] args) {
+        // Cabeçalho do Sistema
+        System.out.println("\n\n");
+        System.out.println("\n+---------------------------------------+");
+        System.out.println("|       FISCAL FLOW ENTERPRISE          |");
+        System.out.println("|       Sistema de Gestão v1.0          |");
+        System.out.println("+---------------------------------------+");
 
-        System.out.println("=== ERP FISCAL ===");
+        while (true) {
+            System.out.println("\n+---------------------------------------+");
+            System.out.println("|            MENU PRINCIPAL             |");
+            System.out.println("+---------------------------------------+");
+            System.out.println("|  [1] Emitir Nova Nota Fiscal          |");
+            System.out.println("|  [2] Sair do Sistema                  |");
+            System.out.println("+---------------------------------------+");
+            System.out.print(">> Digite a opção desejada: ");
 
-        while (true){
-            System.out.println("\n --- MENU PRINCIPAL ---");
-            System.out.println("[1] Emitir Nota Fiscal");
-            System.out.println("[2] Sair");
-            System.out.println("Opcão: ");
             String opcao = scanner.nextLine();
 
-            if (opcao.equals("1")){
+            if (opcao.equals("1")) {
                 processarEmissao();
-            }else if (opcao.equals("2")){
-                System.out.println("Saindo do Sistema");
+            } else if (opcao.equals("2")) {
+                System.out.println("\n[!] Encerrando conexão");
                 break;
-            }else {
-                System.out.println("Opcão Invalida");
+            } else {
+                System.out.println("\n[!] Opção Inválida Tente novamente");
             }
         }
     }
 
     private static void processarEmissao() {
-        System.out.println("\n=== NOVA EMISSÃO ===");
+        System.out.println("\n=========================================");
+        System.out.println("         NOVA EMISSÃO DE NOTA           ");
+        System.out.println("=========================================");
 
-        System.out.print("Descrição: ");
+        System.out.print(">> Descrição do Item: ");
         String descricao = scanner.nextLine();
 
         if (descricao.trim().isEmpty()) {
-            System.out.println("ERRO: Descrição vazia");
+            System.out.println("[X] ERRO: A descrição não pode ser vazia");
             return;
         }
 
-        System.out.print("Valor Base (R$): ");
+        System.out.print(">> Valor Base (R$): ");
         try {
             double valorBase = Double.parseDouble(scanner.nextLine());
 
             if (valorBase <= 0) {
-                System.out.println("[ERRO]: Valor deve ser positivo");
+                System.out.println("[X] ERRO: O valor deve ser positivo");
                 return;
             }
 
-            System.out.println("Tipo: [1] Serviço | [2] Produto | [3] Exportação");
-            System.out.print("Escolha: ");
+            System.out.println("\nSelecione a Categoria Tributária:");
+            System.out.println("   [1] Serviço");
+            System.out.println("   [2] Produto");
+            System.out.println("   [3] Exportação");
+            System.out.print(">> Opção: ");
             String opcao = scanner.nextLine();
 
             String tipoEnum = "";
-            if (opcao.equals("1")) tipoEnum = "SERVICO";
-            else if (opcao.equals("2")) tipoEnum = "PRODUTO";
-            else if (opcao.equals("3")) tipoEnum = "EXPORTACAO";
-            else {
-                System.out.println("Opção inválida");
+            String labelImposto = "";
+
+            if (opcao.equals("1")) {
+                tipoEnum = "SERVICO";
+                labelImposto = "5%";
+            } else if (opcao.equals("2")) {
+                tipoEnum = "PRODUTO";
+                labelImposto = "17%";
+            } else if (opcao.equals("3")) {
+                tipoEnum = "EXPORTACAO";
+                labelImposto = "ISENTO";
+            } else {
+                System.out.println("[X] Opção de categoria inválida");
                 return;
             }
 
             double imposto = calcularImposto(valorBase, tipoEnum);
             double total = valorBase + imposto;
 
-            System.out.println("===============================");
-            System.out.println("CALCULADO COM SUCESSO:");
-            System.out.println("Imposto: R$ " + imposto);
-            System.out.println("Total:   R$ " + total);
-            System.out.println("===============================");
+            System.out.println("\n");
+            System.out.println("-----------------------------------------");
+            System.out.println("        COMPROVANTE DE CÁLCULO           ");
+            System.out.println("-----------------------------------------");
+            System.out.printf(" ITEM:      %-25s %n", descricao.toUpperCase());
+            System.out.printf(" TIPO:      %-25s %n", tipoEnum);
+            System.out.println("-----------------------------------------");
+            System.out.printf(" VALOR BASE:        R$ %10.2f %n", valorBase);
+            System.out.printf(" TRIBUTO %-10s R$ %10.2f %n", "(" + labelImposto + "):", imposto);
+            System.out.println("-----------------------------------------");
+            System.out.printf(" TOTAL A PAGAR:     R$ %10.2f %n", total);
+            System.out.println("-----------------------------------------");
 
-            System.out.println("=== Iniciando persistência automática no Banco de Dados ===");
+            System.out.println("\n[INFO] Conectando ao Banco de Dados");
             salvarNoBancoDeDados(descricao, valorBase, imposto, total, tipoEnum);
 
         } catch (NumberFormatException e) {
-            System.out.println("[ERRO]: Digite um número válido");
+            System.out.println("[X] ERRO: Por favor, digite um número válido (Ex: 1500.50)");
         }
     }
 
@@ -112,6 +141,7 @@ public class Main {
             stmt.setDouble(2, valorBase);
             stmt.setDouble(3, imposto);
             stmt.setDouble(4, total);
+
             int tipoNumerico = 0;
             if (tipoEnum.equals("SERVICO")) tipoNumerico = 1;
             else if (tipoEnum.equals("PRODUTO")) tipoNumerico = 2;
@@ -120,10 +150,12 @@ public class Main {
             stmt.setInt(5, tipoNumerico);
 
             stmt.executeUpdate();
-            System.out.println("SUCESSO: Dados salvos no MySQL");
+
+            System.out.println("[OK] SUCESSO! Nota Fiscal gravada no sistema");
 
         } catch (SQLException e) {
-            System.out.println("ERRO CRÍTICO DE BANCO: " + e.getMessage());
+            System.out.println("\n[!!!] FALHA CRÍTICA DE SISTEMA [!!!]");
+            System.out.println("Erro ao persistir dados: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
@@ -134,5 +166,4 @@ public class Main {
             }
         }
     }
-
 }
