@@ -1,4 +1,10 @@
 package br.com.centroweg.infra.strategy;
 
-public class ImpostoProdutoStrategy {
+import br.com.centroweg.infra.CalculadoraImpostosStrategy;
+
+public class ImpostoProdutoStrategy implements CalculadoraImpostosStrategy {
+    @Override
+    public Double calcularImposto(Double valorBase) {
+        return 0.0;
+    }
 }
