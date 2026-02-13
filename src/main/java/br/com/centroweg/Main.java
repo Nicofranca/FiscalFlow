@@ -1,6 +1,10 @@
 package br.com.centroweg;
 
 import java.util.Scanner;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class Main {
 
@@ -11,7 +15,7 @@ public class Main {
     private static String PASSWORD = "mysqlPW";
     public static void main(String[] args) {
 
-        System.out.println("=== ERP FISCAL LEGADO ===");
+        System.out.println("=== ERP FISCAL ===");
 
         while (true){
             System.out.println("\n --- MENU PRINCIPAL ---");
@@ -25,18 +29,20 @@ public class Main {
             }else if (opcao.equals("2")){
                 System.out.println("Saindo do Sistema");
                 break;
+            }else {
+                System.out.println("Opcão Invalida");
             }
         }
     }
 
     private static void processarEmissao() {
-        System.out.println("\n>>> NOVA EMISSÃO <<<");
+        System.out.println("\n=== NOVA EMISSÃO ===");
 
         System.out.print("Descrição: ");
         String descricao = scanner.nextLine();
 
         if (descricao.trim().isEmpty()) {
-            System.out.println("ERRO: Descrição vazia.");
+            System.out.println("ERRO: Descrição vazia");
             return;
         }
 
@@ -45,7 +51,7 @@ public class Main {
             double valorBase = Double.parseDouble(scanner.nextLine());
 
             if (valorBase <= 0) {
-                System.out.println("ERRO: Valor deve ser positivo.");
+                System.out.println("[ERRO]: Valor deve ser positivo");
                 return;
             }
 
@@ -58,7 +64,7 @@ public class Main {
             else if (opcao.equals("2")) tipoEnum = "PRODUTO";
             else if (opcao.equals("3")) tipoEnum = "EXPORTACAO";
             else {
-                System.out.println("Opção inválida!");
+                System.out.println("Opção inválida");
                 return;
             }
 
@@ -75,7 +81,7 @@ public class Main {
             salvarNoBancoDeDados(descricao, valorBase, imposto, total, tipoEnum);
 
         } catch (NumberFormatException e) {
-            System.out.println("ERRO: Digite um número válido.");
+            System.out.println("[ERRO]: Digite um número válido");
         }
     }
 
@@ -86,6 +92,47 @@ public class Main {
         return 0.0;
     }
 
+    private static void salvarNoBancoDeDados(String descricao, double valorBase, double imposto, double total, String tipoEnum) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+            String sql = "INSERT INTO notas_fiscais (" +
+                    "descricao, " +
+                    "valor_base, " +
+                    "valor_imposto, " +
+                    "valor_total, " +
+                    "tipo) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, descricao);
+            stmt.setDouble(2, valorBase);
+            stmt.setDouble(3, imposto);
+            stmt.setDouble(4, total);
+            int tipoNumerico = 0;
+            if (tipoEnum.equals("SERVICO")) tipoNumerico = 1;
+            else if (tipoEnum.equals("PRODUTO")) tipoNumerico = 2;
+            else if (tipoEnum.equals("EXPORTACAO")) tipoNumerico = 3;
+
+            stmt.setInt(5, tipoNumerico);
+
+            stmt.executeUpdate();
+            System.out.println("SUCESSO: Dados salvos no MySQL");
+
+        } catch (SQLException e) {
+            System.out.println("ERRO CRÍTICO DE BANCO: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
