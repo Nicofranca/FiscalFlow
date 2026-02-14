@@ -1,5 +1,5 @@
 package br.com.centroweg.infra;
 
-public interface CalculadoraImpostosStrategy {
+public interface CalculadoraImpostosStrategyInt {
     Double calcularImposto(Double valorBase);
 }

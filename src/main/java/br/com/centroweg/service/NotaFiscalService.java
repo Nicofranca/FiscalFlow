@@ -1,12 +1,14 @@
 package br.com.centroweg.service;
 
-import br.com.centroweg.infra.CalculadoraImpostosStrategy;
+import br.com.centroweg.infra.CalculadoraImpostosStrategyInt;
 
 public class NotaFiscalService {
 
-    CalculadoraImpostosStrategy calculadoraImpostosStrategy;
+    CalculadoraImpostosStrategyInt calculadoraImpostosStrategyInt;
 
-    public NotaFiscalService(CalculadoraImpostosStrategy calculadoraImpostosStrategy){
-        this.calculadoraImpostosStrategy = calculadoraImpostosStrategy;
+    public NotaFiscalService(CalculadoraImpostosStrategyInt calculadoraImpostosStrategyInt){
+        this.calculadoraImpostosStrategyInt = calculadoraImpostosStrategyInt;
     }
+
+
 }
