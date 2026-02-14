@@ -9,7 +9,7 @@ public class NotaFiscal {
     private Double valor_imposto;
     private Double valor_total;
     private int tipo;
-    private Timestamp dat_emissao;
+    private Timestamp data_emissao;
 
     public NotaFiscal(int id, String descricao, Double valor_base, Double valor_imposto, Double valor_total, int tipo, Timestamp dat_emissao) {
         this.id = id;
@@ -18,7 +18,7 @@ public class NotaFiscal {
         this.valor_imposto = valor_imposto;
         this.valor_total = valor_total;
         this.tipo = tipo;
-        this.dat_emissao = dat_emissao;
+        this.data_emissao = dat_emissao;
     }
 
     public NotaFiscal(String descricao, Double valor_base, Double valor_imposto, Double valor_total, int tipo, Timestamp dat_emissao) {
@@ -27,7 +27,7 @@ public class NotaFiscal {
         this.valor_imposto = valor_imposto;
         this.valor_total = valor_total;
         this.tipo = tipo;
-        this.dat_emissao = dat_emissao;
+        this.data_emissao = dat_emissao;
     }
 
     public NotaFiscal() {
@@ -81,11 +81,11 @@ public class NotaFiscal {
         this.tipo = tipo;
     }
 
-    public Timestamp getDat_emissao() {
-        return dat_emissao;
+    public Timestamp getData_emissao() {
+        return data_emissao;
     }
 
-    public void setDat_emissao(Timestamp dat_emissao) {
-        this.dat_emissao = dat_emissao;
+    public void setData_emissao(Timestamp data_emissao) {
+        this.data_emissao = data_emissao;
     }
 }
