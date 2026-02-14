@@ -2,9 +2,9 @@ package br.com.centroweg.infra.strategy;
 
 import br.com.centroweg.infra.CalculadoraImpostosStrategyInt;
 
-public class ImpostoProdutoStrategyInt implements CalculadoraImpostosStrategyInt {
+public class ImpostoServicoStrategy implements CalculadoraImpostosStrategyInt {
 
-    private Double taxa = 0.6;
+    private Double taxa = 0.2;
 
     @Override
     public Double calcularImposto(Double valorBase) {
