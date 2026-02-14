@@ -3,8 +3,14 @@ package br.com.centroweg.infra.strategy;
 import br.com.centroweg.infra.CalculadoraImpostosStrategyInt;
 
 public class ImpostoExportacaoStrategyInt implements CalculadoraImpostosStrategyInt {
+
+    private Double taxa = 0.3;
+
     @Override
     public Double calcularImposto(Double valorBase) {
-        return 0.0;
+
+        Double totalImposto = valorBase*taxa;
+
+        return totalImposto;
     }
 }
