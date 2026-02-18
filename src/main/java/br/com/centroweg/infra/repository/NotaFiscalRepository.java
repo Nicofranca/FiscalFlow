@@ -40,7 +40,7 @@ public class NotaFiscalRepository implements NotaFiscalRepositoryInt{
     @Override
     public List<NotaFiscal> listNotas() throws SQLException{
         String query = """
-                INSERT INTO NotaFiscal (descricao, valor_base, valor_imposto, valor_total, tipo, data_emissao) VALUES (?, ?, ?, ?, ?, ?)
+                SELECT descricao, valor_base, valor_imposto, valor_total, tipo, data_emissao FROM NotaFiscal
                 """;
 
         List<NotaFiscal> listNotaFiscal = new ArrayList<>();
@@ -67,12 +67,15 @@ public class NotaFiscalRepository implements NotaFiscalRepositoryInt{
     @Override
     public NotaFiscal findByIdNota(int id) throws SQLException{
         String query = """
-                INSERT INTO NotaFiscal (descricao, valor_base, valor_imposto, valor_total, tipo, data_emissao) VALUES (?, ?, ?, ?, ?, ?)
+                SELECT descricao, valor_base, valor_imposto, valor_total, tipo, data_emissao FROM NotaFiscal WHERE id = ?
                 """;
 
 
         try(Connection conn = Conexao.conectar();
             PreparedStatement stmt = conn.prepareStatement(query)){
+
+            stmt.setInt(1, id);
+
             try(ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()){
                     NotaFiscal notaFiscal = new NotaFiscal();
