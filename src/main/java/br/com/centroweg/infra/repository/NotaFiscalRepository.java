@@ -11,7 +11,7 @@ public class NotaFiscalRepository implements NotaFiscalRepositoryInt{
     @Override
     public NotaFiscal saveNota(NotaFiscal notaFiscal) throws SQLException {
         String query = """
-                INSERT INTO NotaFiscal (descricao, valor_base, valor_imposto, valor_total, tipo, data_emissao) VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO notas_fiscais (descricao, valor_base, valor_imposto, valor_total, tipo, data_emissao) VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
 
@@ -40,7 +40,7 @@ public class NotaFiscalRepository implements NotaFiscalRepositoryInt{
     @Override
     public List<NotaFiscal> listNotas() throws SQLException{
         String query = """
-                SELECT descricao, valor_base, valor_imposto, valor_total, tipo, data_emissao FROM NotaFiscal
+                SELECT descricao, valor_base, valor_imposto, valor_total, tipo, data_emissao FROM notas_fiscais
                 """;
 
         List<NotaFiscal> listNotaFiscal = new ArrayList<>();
@@ -65,11 +65,10 @@ public class NotaFiscalRepository implements NotaFiscalRepositoryInt{
     }
 
     @Override
-    public NotaFiscal findByIdNota(int id) throws SQLException{
+    public String findByIdTipo(int id) throws SQLException{
         String query = """
-                SELECT descricao, valor_base, valor_imposto, valor_total, tipo, data_emissao FROM NotaFiscal WHERE id = ?
+                SELECT tipo_operacao FROM tipo_operacao WHERE id = ?
                 """;
-
 
         try(Connection conn = Conexao.conectar();
             PreparedStatement stmt = conn.prepareStatement(query)){
@@ -77,16 +76,10 @@ public class NotaFiscalRepository implements NotaFiscalRepositoryInt{
             stmt.setInt(1, id);
 
             try(ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()){
-                    NotaFiscal notaFiscal = new NotaFiscal();
-                    notaFiscal.setDescricao(rs.getString("descricao"));
-                    notaFiscal.setValor_base(rs.getDouble("valor_base"));
-                    notaFiscal.setValor_imposto(rs.getDouble("valor_imposto"));
-                    notaFiscal.setValor_total(rs.getDouble("valor_total"));
-                    notaFiscal.setTipo(rs.getInt("tipo"));
-                    notaFiscal.setData_emissao(rs.getTimestamp("data_emissao"));
+                if (rs.next()){
+                    String tipo = rs.getString("tipo_operacao");
 
-                    return notaFiscal;
+                    return tipo;
                 }
             }
         }

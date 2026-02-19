@@ -1,5 +1,7 @@
 package br.com.centroweg.view;
 
+import br.com.centroweg.domain.NotaFiscal;
+
 import java.util.Scanner;
 
 public class NotaFiscalView {
@@ -45,6 +47,16 @@ public class NotaFiscalView {
             System.out.print(">> Opção: ");
 
             return scINT.nextInt();
+        }
+
+        public double valorBase(){
+            System.out.println("\nInsira o valor base do produto/serviço: ");
+            return scINT.nextDouble();
+        }
+
+        public String mostrarResultado(NotaFiscal notaFiscal){
+            return ("\nValor do imposto: " + notaFiscal.getValor_imposto()+
+                    "\nValor total a ser pago: "+notaFiscal.getValor_total());
         }
     }
 

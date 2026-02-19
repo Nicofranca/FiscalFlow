@@ -8,7 +8,7 @@ import java.util.List;
 public interface NotaFiscalRepositoryInt {
     NotaFiscal saveNota(NotaFiscal notaFiscal) throws SQLException;
     List<NotaFiscal> listNotas() throws SQLException;
-    NotaFiscal findByIdNota(int id) throws SQLException;
+    String findByIdTipo(int id) throws SQLException;
     void updateByIdNota(NotaFiscal notaFiscal) throws SQLException;
     void deleteByIdNota() throws SQLException;
 }

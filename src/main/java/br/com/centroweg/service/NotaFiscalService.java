@@ -47,6 +47,16 @@ public class NotaFiscalService {
 
         try {
             notaFiscalRepository.saveNota(notaFiscal);
+
+            return notaFiscal;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String findByIdTipo(NotaFiscal notaFiscal){
+        try {
+            return notaFiscalRepository.findByIdTipo(notaFiscal.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
