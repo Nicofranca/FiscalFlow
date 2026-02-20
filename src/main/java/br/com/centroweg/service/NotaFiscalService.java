@@ -4,6 +4,7 @@ import br.com.centroweg.domain.NotaFiscal;
 import br.com.centroweg.infra.CalculadoraImpostosStrategyInt;
 import br.com.centroweg.infra.repository.NotaFiscalRepository;
 import br.com.centroweg.infra.strategy.ImpostoExportacaoStrategy;
+import br.com.centroweg.infra.strategy.ImpostoImportacaoStrategy;
 import br.com.centroweg.infra.strategy.ImpostoProdutoStrategy;
 import br.com.centroweg.infra.strategy.ImpostoServicoStrategy;
 
@@ -30,6 +31,7 @@ public class NotaFiscalService {
             case 1 -> impostosStrategyInt = new ImpostoServicoStrategy();
             case 2 -> impostosStrategyInt = new ImpostoProdutoStrategy();
             case 3 -> impostosStrategyInt = new ImpostoExportacaoStrategy();
+            case 4 -> impostosStrategyInt = new ImpostoImportacaoStrategy();
             default -> throw new IllegalArgumentException("Opcao Inválida");
         }
 

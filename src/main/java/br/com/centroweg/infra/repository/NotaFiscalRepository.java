@@ -77,6 +77,7 @@ public class NotaFiscalRepository implements NotaFiscalRepositoryInt{
 
             try(ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()){
+
                     String tipo = rs.getString("tipo_operacao");
 
                     return tipo;

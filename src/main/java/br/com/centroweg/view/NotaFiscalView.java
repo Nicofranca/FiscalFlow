@@ -44,6 +44,7 @@ public class NotaFiscalView {
             System.out.println("   [1] Serviço");
             System.out.println("   [2] Produto");
             System.out.println("   [3] Exportação");
+            System.out.println("   [4] Importação");
             System.out.print(">> Opção: ");
 
             return scINT.nextInt();
