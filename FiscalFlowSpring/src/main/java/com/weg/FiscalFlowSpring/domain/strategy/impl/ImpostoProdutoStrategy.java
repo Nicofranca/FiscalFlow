@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class ImpostoProdutoStrategy  implements CalcularImpostoStrategyInt {
     @Override
     public Double calcularImposto(Double valorBase) {
-        return 0.6;
+        return valorBase * 0.6;
     }
 
     @Override
