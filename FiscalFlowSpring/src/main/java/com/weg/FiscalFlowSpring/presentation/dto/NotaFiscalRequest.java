@@ -1,6 +1,6 @@
 package com.weg.FiscalFlowSpring.presentation.dto;
 
-public record NotaFiscalDTO(
+public record NotaFiscalRequest(
         String descricao,
         Double valorBase,
         int opcao
