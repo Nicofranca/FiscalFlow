@@ -1,10 +1,7 @@
 package br.com.centroweg;
 
+import java.sql.*;
 import java.util.Scanner;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public class Main {
 
@@ -15,7 +12,6 @@ public class Main {
     private static String PASSWORD = "mysqlPW";
 
     public static void main(String[] args) {
-        // Cabeçalho do Sistema
         System.out.println("\n\n");
         System.out.println("\n+---------------------------------------+");
         System.out.println("|       FISCAL FLOW ENTERPRISE          |");
@@ -26,20 +22,23 @@ public class Main {
             System.out.println("\n+---------------------------------------+");
             System.out.println("|            MENU PRINCIPAL             |");
             System.out.println("+---------------------------------------+");
-            System.out.println("|  [1] Emitir Nova Nota Fiscal          |");
-            System.out.println("|  [2] Sair do Sistema                  |");
+            System.out.println("|[1] Emitir Nova Nota Fiscal            |");
+            System.out.println("|[2] Listar Todas as Notas              |");
+            System.out.println("|[3] Sair do Sistema                    |");
             System.out.println("+---------------------------------------+");
-            System.out.print(">> Digite a opção desejada: ");
+            System.out.print("Digite a opção desejada: ");
 
             String opcao = scanner.nextLine();
 
             if (opcao.equals("1")) {
                 processarEmissao();
             } else if (opcao.equals("2")) {
-                System.out.println("\n[!] Encerrando conexão");
+                listarTodasNotas();
+            } else if (opcao.equals("3")) {
+                System.out.println("\n Encerrando sistema");
                 break;
             } else {
-                System.out.println("\n[!] Opção Inválida Tente novamente");
+                System.out.println("\n Opção Inválida.");
             }
         }
     }
@@ -49,28 +48,28 @@ public class Main {
         System.out.println("         NOVA EMISSÃO DE NOTA           ");
         System.out.println("=========================================");
 
-        System.out.print(">> Descrição do Item: ");
+        System.out.print("Descrição do Item: ");
         String descricao = scanner.nextLine();
 
         if (descricao.trim().isEmpty()) {
-            System.out.println("[X] ERRO: A descrição não pode ser vazia");
+            System.out.println("A descrição não pode ser vazia");
             return;
         }
 
-        System.out.print(">> Valor Base (R$): ");
+        System.out.print("Valor Base (R$): ");
         try {
             double valorBase = Double.parseDouble(scanner.nextLine());
 
             if (valorBase <= 0) {
-                System.out.println("[X] ERRO: O valor deve ser positivo");
+                System.out.println("O valor deve ser positivo");
                 return;
             }
 
             System.out.println("\nSelecione a Categoria Tributária:");
-            System.out.println("   [1] Serviço");
-            System.out.println("   [2] Produto");
-            System.out.println("   [3] Exportação");
-            System.out.print(">> Opção: ");
+            System.out.println("[1] Serviço");
+            System.out.println("[2] Produto");
+            System.out.println("[3] Exportação");
+            System.out.print("Opção: ");
             String opcao = scanner.nextLine();
 
             String tipoEnum = "";
@@ -86,7 +85,7 @@ public class Main {
                 tipoEnum = "EXPORTACAO";
                 labelImposto = "ISENTO";
             } else {
-                System.out.println("[X] Opção de categoria inválida");
+                System.out.println("Opção de categoria inválida");
                 return;
             }
 
@@ -106,11 +105,10 @@ public class Main {
             System.out.printf(" TOTAL A PAGAR:     R$ %10.2f %n", total);
             System.out.println("-----------------------------------------");
 
-            System.out.println("\n[INFO] Conectando ao Banco de Dados");
             salvarNoBancoDeDados(descricao, valorBase, imposto, total, tipoEnum);
 
         } catch (NumberFormatException e) {
-            System.out.println("[X] ERRO: Por favor, digite um número válido (Ex: 1500.50)");
+            System.out.println("Digite um número válido");
         }
     }
 
@@ -122,48 +120,68 @@ public class Main {
     }
 
     private static void salvarNoBancoDeDados(String descricao, double valorBase, double imposto, double total, String tipoEnum) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "INSERT INTO notas_fiscais (descricao, valor_base, valor_imposto, valor_total, tipo) VALUES (?, ?, ?, ?, ?)";
 
-        try {
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            String sql = "INSERT INTO notas_fiscais (" +
-                    "descricao, " +
-                    "valor_base, " +
-                    "valor_imposto, " +
-                    "valor_total, " +
-                    "tipo) " +
-                    "VALUES (?, ?, ?, ?, ?)";
-
-            stmt = conn.prepareStatement(sql);
             stmt.setString(1, descricao);
             stmt.setDouble(2, valorBase);
             stmt.setDouble(3, imposto);
             stmt.setDouble(4, total);
 
-            int tipoNumerico = 0;
-            if (tipoEnum.equals("SERVICO")) tipoNumerico = 1;
-            else if (tipoEnum.equals("PRODUTO")) tipoNumerico = 2;
-            else if (tipoEnum.equals("EXPORTACAO")) tipoNumerico = 3;
-
+            int tipoNumerico = switch (tipoEnum) {
+                case "SERVICO" -> 1;
+                case "PRODUTO" -> 2;
+                case "EXPORTACAO" -> 3;
+                default -> 0;
+            };
             stmt.setInt(5, tipoNumerico);
 
             stmt.executeUpdate();
-
             System.out.println("[OK] SUCESSO! Nota Fiscal gravada no sistema");
 
         } catch (SQLException e) {
-            System.out.println("\n[!!!] FALHA CRÍTICA DE SISTEMA [!!!]");
-            System.out.println("Erro ao persistir dados: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            System.out.println("[X] ERRO ao salvar: " + e.getMessage());
+        }
+    }
+
+    private static void listarTodasNotas() {
+        System.out.println("\n=================================================================================");
+        System.out.println("                         RELATÓRIO DE NOTAS FISCAIS                              ");
+        System.out.println("=================================================================================");
+        System.out.printf("%-4s | %-18s | %-12s | %-10s | %-10s | %-10s%n",
+                "ID", "DESCRIÇÃO", "TIPO", "BASE", "IMPOSTO", "TOTAL");
+        System.out.println("---------------------------------------------------------------------------------");
+
+        String sql = "SELECT * FROM notas_fiscais";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            boolean registroEncontrado = false;
+
+            while (rs.next()) {
+                registroEncontrado = true;
+                int id = rs.getInt("id");
+                String desc = rs.getString("descricao");
+                double base = rs.getDouble("valor_base");
+                double imposto = rs.getDouble("valor_imposto");
+                double total = rs.getDouble("valor_total");
+                String tipoTexto = rs.getString("tipo");
+
+
+                System.out.printf("%-4d | %-18.18s | %-12s | R$%8.2f | R$%8.2f | R$%8.2f%n",
+                        id, desc, tipoTexto, base, imposto, total);
             }
+
+            if (!registroEncontrado) {
+                System.out.println("Nenhum registro encontrado no banco de dados.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("erro ao listar dados: " + e.getMessage());
         }
     }
 }
